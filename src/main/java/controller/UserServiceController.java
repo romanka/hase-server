@@ -1,0 +1,90 @@
+package controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import model.User;
+import repositories.UserRepository;
+
+
+@RestController
+@RequestMapping(UserServiceController.CONTEXT)
+public class UserServiceController extends GenericService {
+
+    Logger logger  = LoggerFactory.getLogger(UserServiceController.class);
+
+    static final String    CONTEXT = "/user";
+
+    @Autowired
+    private UserRepository userRepo;
+
+    /*
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> listUsers() {
+        logger.debug("listUsers");
+
+        List<User> result = new ArrayList<>();
+        userRepo.findAll().forEach(result::add);
+
+        return result;
+    }*/
+
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public User addUser(@RequestBody String name, @RequestBody String rescueTime) {
+        logger.debug("addUser: " + name);
+        
+        User newuser = new User();
+        newuser.setName(name);
+        newuser.setRescueTimeKey(rescueTime);
+        newuser.setToken(UUID.randomUUID().toString());
+        User user = userRepo.save(newuser);
+
+        return user;
+    }
+
+    /*
+    @RequestMapping(method = RequestMethod.GET, value = "{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUser(@PathVariable Long userId) {
+        logger.debug("getUser: " + userId);
+
+        return userRepo.findOne(userId);
+    }
+	*/
+    
+    /*
+    @RequestMapping(method = RequestMethod.POST, value = "{userId}/login")
+    @ResponseStatus(HttpStatus.OK)
+    public User login(@PathVariable Long userId) {
+        logger.debug("login: " + userId);
+
+        User user = userRepo.findOne(userId);
+        if (user != null) {
+            user.setToken(UUID.randomUUID().toString());
+            user = userRepo.save(user);
+
+            return user;
+        }
+
+        return null;
+    }
+	*/
+    
+}
